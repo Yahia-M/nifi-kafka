@@ -1,0 +1,30 @@
+image:
+  name: confluentinc/cp-all-in-one:6.2.0
+  workspaceMount:
+    source: .
+    target: /workspace/my-project
+
+ports:
+  - port: 8081
+    onOpen: open-preview
+  - port: 8082
+    onOpen: open-preview
+  - port: 2181
+    onOpen: open-preview
+  - port: 9092
+    onOpen: open-preview
+  - port: 8080
+    onOpen: open-preview
+
+tasks:
+  - init: mvn clean install -DskipTests
+    command: |
+      bin/zookeeper-server-start /etc/kafka/zookeeper.properties &
+      sleep 5
+      bin/kafka-server-start /etc/kafka/server.properties &
+      sleep 5
+      bin/schema-registry-start /etc/schema-registry/schema-registry.properties &
+      sleep 5
+      bin/kafka-rest-start /etc/kafka/kafka-rest.properties &
+      sleep 5
+      bin/nifi.sh run
