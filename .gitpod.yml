@@ -1,9 +1,26 @@
+image:
+  name: confluentinc/cp-all-in-one:6.2.0
+ports:
+  - port: 8081
+    onOpen: open-preview
+  - port: 8082
+    onOpen: open-preview
+  - port: 2181
+    onOpen: open-preview
+  - port: 9092
+    onOpen: open-preview
+  - port: 8080
+    onOpen: open-preview
+
 tasks:
-  - init: mvn clean install -f nifi/pom.xml   # Build NiFi 
-  - init: mvn clean install -f kafka/pom.xml  # Build Kafka
-  - init: mvn clean install -f zookeeper/pom.xml # Build Zookeeper
-    
-  - command: |                     
-      nifi/nifi-assembly/target/nifi-1.0-bin/bin/nifi.sh start    # Start NiFi
-      kafka/kafka_2.12-2.5.0/bin/zookeeper-server-start.sh config/zookeeper.properties
-      kafka/kafka_2.12-2.5.0/bin/kafka-server-start.sh config/server.properties
+  - init: mvn clean install -DskipTests
+    command: |
+      bin/zookeeper-server-start /etc/kafka/zookeeper.properties &
+      sleep 5
+      bin/kafka-server-start /etc/kafka/server.properties &
+      sleep 5
+      bin/schema-registry-start /etc/schema-registry/schema-registry.properties &
+      sleep 5
+      bin/kafka-rest-start /etc/kafka/kafka-rest.properties &
+      sleep 5
+      bin/nifi.sh run
