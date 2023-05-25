@@ -1,5 +1,5 @@
 image:
-  name: confluentinc/cp-all-in-one:6.2.0
+  name: gitpod/nifi-kafka:latest
 ports:
   - port: 8081
     onOpen: open-preview
