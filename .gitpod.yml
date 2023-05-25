@@ -1,0 +1,9 @@
+tasks:
+  - init: mvn clean install -f nifi/pom.xml   # Build NiFi 
+  - init: mvn clean install -f kafka/pom.xml  # Build Kafka
+  - init: mvn clean install -f zookeeper/pom.xml # Build Zookeeper
+    
+  - command: |                     
+      nifi/nifi-assembly/target/nifi-1.0-bin/bin/nifi.sh start    # Start NiFi
+      kafka/kafka_2.12-2.5.0/bin/zookeeper-server-start.sh config/zookeeper.properties
+      kafka/kafka_2.12-2.5.0/bin/kafka-server-start.sh config/server.properties
